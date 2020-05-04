@@ -134,7 +134,8 @@ class _OgreCommonExport_(object):
         logger.info("target_file_name_no_ext %s"%target_file_name_no_ext)
 
         Report.reset()
-        scene.dot_scene(target_path, target_file_name_no_ext)
+        #scene.dot_scene(target_path, target_file_name_no_ext)
+        scene.export_json(target_path)
         Report.show()
 
         return {'FINISHED'}

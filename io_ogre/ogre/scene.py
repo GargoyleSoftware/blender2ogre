@@ -11,6 +11,67 @@ from .mesh import *
 from .material import *
 from . import material
 from .. import bl_info
+import json
+
+def _node_to_json(node):
+    return {"name"               : "Marine",
+            # "is_root_node"       : True,
+            "inherit_scale"      : False,
+            "inherit_orientation": False,
+            "position"           : [1,2,3],
+            "rotation"           : [w, x, y, z],    # Quaternion
+            "scale"              : [1,1,1]}
+
+def export_json(path):
+    target_scene_file = join(path, 'scene.json')
+
+    w = 1
+    x = 1
+    y = 1
+    z = 1
+    data = {
+        'version': 1,
+        "use_binary_floating_point": True,
+        #"MovableObject_msDefaultVisibilityFlags": ...,
+        'name': 'David',
+        'status': 'Awesome',
+        'scene_nodes': [_node_to_json(node) for node in scene_nodes],
+        'items': [
+            # TODO: items here
+        ],
+
+        # TODO: lights
+        # 'lights': [
+        #     ],
+
+        # TODO: entities
+        # 'entities': [
+        # ],
+
+        # TODO: decals
+        # 'decals': [
+        # ],
+
+        # TODO: Scene settings
+        #'scene': {
+        #    'ambient': [
+        #        # TODO: ambient
+        #    ],
+        #    'forward_plus': {
+        #        # TODO: forward_plus
+        #    },
+
+        #    # TODO: ParallaxCorrectedCubemap
+        #    # TODO: Instant Radiosity
+        #    # TODO: Area Light Masks
+        #    # TODO: Decals
+
+        #}
+
+        ],
+    }
+    with open(target_scene_file, 'w') as outfile:
+            json.dump(data, outfile)
 
 def dot_scene(path, scene_name=None):
     """
@@ -21,7 +82,7 @@ def dot_scene(path, scene_name=None):
         scene_name = bpy.context.scene.name
     scene_file = scene_name + '.scene'
     target_scene_file = join(path, scene_file)
-    
+
     # Create target path if it does not exist
     if not os.path.exists(path):
         print("Creating Directory -", path)
@@ -254,7 +315,7 @@ def _mesh_entity_helper(doc, ob, o):
 
     """
     nope - no more ".game" in 2.80
-    
+
     # # extended format - BGE Physics ##
     _property_helper(doc, user, 'mass', ob.game.mass)
     _property_helper(doc, user, 'mass_radius', ob.game.radius)
@@ -383,7 +444,7 @@ def ogre_document(materials):
         #a.setAttribute('mode', world.mist_settings.falloff.lower() )    # not on DTD spec
         a.setAttribute('linearEnd', '%s' %(world.mist_settings.start+world.mist_settings.depth))
         a.setAttribute('expDensity', world.mist_settings.intensity)
-        
+
         c = doc.createElement('colourDiffuse'); a.appendChild( c )
         c.setAttribute('r', '%s'%color.r)
         c.setAttribute('g', '%s'%color.g)
@@ -413,7 +474,7 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
         # ob.data.tessfaces is empty. always until the following call
         ob.data.update()
         ob.data.calc_loop_triangles()
-        # if it has no faces at all, the object itself will not be exported, BUT 
+        # if it has no faces at all, the object itself will not be exported, BUT
         # it might have children
         print("Vertices: ", len(ob.data.vertices))
         print("Loop triangles: ", ob.data.loop_triangles, len(ob.data.loop_triangles))
@@ -454,7 +515,7 @@ def dot_scene_node_export( ob, path, doc=None, rex=None,
             overwrite = not exists or (exists and config.get("MESH_OVERWRITE"))
             tangents = int(config.get("generateTangents"))
             mesh.dot_mesh(ob, path, overwrite=overwrite, tangents=tangents)
-            skeleton.dot_skeleton(ob, path, overwrite=overwrite)    
+            skeleton.dot_skeleton(ob, path, overwrite=overwrite)
             exported_meshes.append( ob.data.name )
 
         # Deal with Array modifier
