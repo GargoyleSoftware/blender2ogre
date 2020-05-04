@@ -13,6 +13,9 @@ from . import material
 from .. import bl_info
 import json
 
+const uint32 VisibilityFlags::LAYER_VISIBILITY          = 1u << 30u;
+uint32 MovableObject::msDefaultVisibilityFlags = 0xFFFFFFFF & (~LAYER_VISIBILITY);
+
 def _node_to_json(node):
     return {"name"               : "Marine",
             # "is_root_node"       : True,
@@ -32,7 +35,8 @@ def export_json(path):
     data = {
         'version': 1,
         "use_binary_floating_point": True,
-        #"MovableObject_msDefaultVisibilityFlags": ...,
+        # TODO: DefaultVisibilityFlags
+        "MovableObject_msDefaultVisibilityFlags": msDefaultVisibilityFlags,
         'name': 'David',
         'status': 'Awesome',
         'scene_nodes': [_node_to_json(node) for node in scene_nodes],
